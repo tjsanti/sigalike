@@ -1,7 +1,7 @@
 API
 ===
 
-.. automodule:: pythontemplate
+.. automodule:: sigalike
    :members:
    :undoc-members:
    :show-inheritance:
