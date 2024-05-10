@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def shifted_sigmoid_similarity(str1: str, str2: str) -> float:
+def shifted_sigmoid_similarity(str1: str, str2: str, shift: int) -> float:
     """Calculates the shifted sigmoid similarity score between two strings.
 
     The shifted sigmoid similarity score acts as a fuzzy string matching
@@ -16,6 +16,8 @@ def shifted_sigmoid_similarity(str1: str, str2: str) -> float:
         The first string to compare.
     str2 : str
         The second string to compare.
+    shift : int
+        Amount to shift sigmoid curve.
 
     Returns
     -------
@@ -34,6 +36,6 @@ def shifted_sigmoid_similarity(str1: str, str2: str) -> float:
     score = match_ratio
     # Penalize if non-perfect match
     if score > 0 and num_extra > 0:
-        score -= 1 / (1 + np.exp(-num_extra + 4))
+        score -= 1 / (1 + np.exp(-num_extra + shift))
 
     return max(score, 0)
