@@ -1,5 +1,7 @@
 import numpy as np
 
+from sigalike.utils import check_content, check_input_type
+
 
 def shifted_sigmoid_similarity(str1: str, str2: str, shift: int) -> float:
     """Calculates the shifted sigmoid similarity score between two strings.
@@ -24,6 +26,11 @@ def shifted_sigmoid_similarity(str1: str, str2: str, shift: int) -> float:
     float
         Shifted sigmoid similarity score.
     """
+    check_input_type(str1, str)
+    check_input_type(str2, str)
+    check_content(str1)
+    check_content(str2)
+
     set_str1 = set(str1.lower().split())
     set_str2 = set(str2.lower().split())
     smaller_set = min(len(set_str1), len(set_str2))
