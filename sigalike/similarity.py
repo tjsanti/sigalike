@@ -3,7 +3,7 @@ import numpy as np
 from sigalike.utils import check_content, check_input_type
 
 
-def shifted_sigmoid_similarity(str1: str, str2: str, shift: int) -> float:
+def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4) -> float:
     """Calculates the shifted sigmoid similarity score between two strings.
 
     The shifted sigmoid similarity score acts as a fuzzy string matching
@@ -18,7 +18,7 @@ def shifted_sigmoid_similarity(str1: str, str2: str, shift: int) -> float:
         The first string to compare.
     str2 : str
         The second string to compare.
-    shift : int
+    shift : int, default 4
         Amount to shift sigmoid curve.
 
     Returns
