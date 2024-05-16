@@ -16,11 +16,11 @@ Features
 Installation
 ============
 
-sigalike requires Python ``>=3.8`` and can be installed via:
+sigalike requires Python ``>=3.9`` and can be installed via:
 
 .. code-block:: bash
 
-   python -m pip install git+https://github.com/tjsanti/sigalike.git
+   pip install sigalike
 
 
 Usage
@@ -42,6 +42,6 @@ Usage
 .. |readthedocs| image:: https://readthedocs.org/projects/sigalike/badge/?version=latest
         :target: https://sigalike.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-.. |Python compat| image:: https://img.shields.io/badge/>=python-3.8-blue.svg
+.. |Python compat| image:: https://img.shields.io/badge/>=python-3.9-blue.svg
 .. |PyPi| image:: https://img.shields.io/pypi/v/sigalike.svg
         :target: https://pypi.python.org/pypi/sigalike
