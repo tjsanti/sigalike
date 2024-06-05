@@ -60,8 +60,6 @@ repos:
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
-    additional_dependencies:
-      - tomli
     hooks:
       - id: codespell
 
