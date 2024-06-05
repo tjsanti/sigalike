@@ -1,9 +1,22 @@
+import string
+
 import numpy as np
 
 from sigalike.utils import check_content, check_input_type
 
 
-def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4) -> float:
+def _preprocess(s: str) -> str:
+
+    # replace punctuation with whitespace
+    s = s.translate(str.maketrans(string.punctuation, " " * len(string.punctuation)))
+
+    s = s.lower()
+    s = s.strip()
+
+    return s
+
+
+def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4, preprocess: bool = True) -> float:
     """Calculates the shifted sigmoid similarity score between two strings.
 
     The shifted sigmoid similarity score acts as a fuzzy string matching
@@ -20,6 +33,8 @@ def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4) -> float:
         The second string to compare.
     shift : int, default 4
         Amount to shift sigmoid curve.
+    preprocess : bool, default True
+        Whether or not to run built-in preprocessing.
 
     Returns
     -------
@@ -28,11 +43,21 @@ def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4) -> float:
     """
     check_input_type(str1, str)
     check_input_type(str2, str)
+    check_input_type(shift, int)
+    check_input_type(preprocess, bool)
     check_content(str1)
     check_content(str2)
 
-    set_str1 = set(str1.lower().split())
-    set_str2 = set(str2.lower().split())
+    if preprocess is True:
+        str1 = _preprocess(str1)
+        str2 = _preprocess(str2)
+
+        # re-check contents
+        check_content(str1)
+        check_content(str2)
+
+    set_str1 = set(str1.split())
+    set_str2 = set(str2.split())
     smaller_set = min(len(set_str1), len(set_str2))
     larger_set = max(len(set_str1), len(set_str2))
 
