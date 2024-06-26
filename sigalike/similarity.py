@@ -1,9 +1,24 @@
+import string
+from collections.abc import Collection, Mapping
+from typing import Any, Dict, NamedTuple, Union
+
 import numpy as np
 
 from sigalike.utils import check_content, check_input_type
 
 
-def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4) -> float:
+def _preprocess(s: str) -> str:
+
+    # replace punctuation with whitespace
+    s = s.translate(str.maketrans(string.punctuation, " " * len(string.punctuation)))
+
+    s = s.lower()
+    s = s.strip()
+
+    return s
+
+
+def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4, preprocess: bool = True) -> float:
     """Calculates the shifted sigmoid similarity score between two strings.
 
     The shifted sigmoid similarity score acts as a fuzzy string matching
@@ -20,19 +35,43 @@ def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4) -> float:
         The second string to compare.
     shift : int, default 4
         Amount to shift sigmoid curve.
+    preprocess : bool, default True
+        Whether or not to run built-in preprocessing.
+
+    Raises
+    ------
+    ValueError
+        If the input strings are empty after preprocessing.
 
     Returns
     -------
     float
         Shifted sigmoid similarity score.
+
+    Examples
+    --------
+    >>> shifted_sigmoid_similarity('apple', 'banana')
+    0.0
+    >>> shifted_sigmoid_similarity('apple', 'apple apple')
+    1.0
     """
     check_input_type(str1, str)
     check_input_type(str2, str)
+    check_input_type(shift, int)
+    check_input_type(preprocess, bool)
     check_content(str1)
     check_content(str2)
 
-    set_str1 = set(str1.lower().split())
-    set_str2 = set(str2.lower().split())
+    if preprocess is True:
+        str1 = _preprocess(str1)
+        str2 = _preprocess(str2)
+
+        # re-check contents
+        check_content(str1)
+        check_content(str2)
+
+    set_str1 = set(str1.split())
+    set_str2 = set(str2.split())
     smaller_set = min(len(set_str1), len(set_str2))
     larger_set = max(len(set_str1), len(set_str2))
 
@@ -46,3 +85,122 @@ def shifted_sigmoid_similarity(str1: str, str2: str, shift: int = 4) -> float:
         score -= 1 / (1 + np.exp(-num_extra + shift))
 
     return max(score, 0)
+
+
+class BestMatch(NamedTuple):
+    """
+    Named tuple to represent the best match.
+    """
+
+    match: str
+    score: float
+
+
+def best_match(
+    collection1: Union[Collection, Mapping, str],
+    collection2: Union[Collection, Mapping],
+) -> Union[BestMatch, Dict[str, BestMatch]]:
+    """
+    Returns the best match(es) between two collections or a string and a collection.
+
+    Parameters
+    ----------
+    collection1 : Collection, Mapping, or str
+        The first collection to compare or a single string.
+    collection2 : Collection or Mapping
+        The second collection to compare.
+
+    Returns
+    -------
+    BestMatch or Dict[str, BestMatch]
+        If both inputs are collections, returns a dictionary where the keys are the
+        strings from the first collection and the values are the named tuples with the best
+        string match and its associated score from the second collection. If collection1 is
+        a string and collection2 is a collection, returns a named tuple with the best matching
+        string and its associated score.
+
+    Raises
+    ------
+    ValueError
+        If either of the input collections are empty.
+    TypeError
+        If one or more inputs are not of the correct type (str, Collection, or Mapping).
+
+    Examples
+    --------
+    >>> best_match("hello", ["hello", "world", "foo"])
+    BestMatch(match='hello', score=1.0)
+    >>> best_match(["hello", "world"], ["hello", "world", "foo"])
+    {'hello': BestMatch(match='hello', score=1.0), 'world': BestMatch(match='world', score=1.0)}
+    >>> best_match(["hello", "world"], ["foo", "bar"])
+    {'hello': BestMatch(match='', score=0.0), 'world': BestMatch(match='', score=0.0)}
+    """
+    if len(collection1) == 0 or len(collection2) == 0:
+        raise ValueError("Input collections cannot be empty")
+
+    if isinstance(collection1, str):
+        if isinstance(collection2, Collection):
+            return _best_match_string_collection(collection1, collection2)
+        elif isinstance(collection2, Mapping):
+            return _best_match_string_collection(collection1, collection2.keys())
+    elif isinstance(collection1, Collection):
+        if isinstance(collection2, Collection):
+            return _best_match_collections(collection1, collection2)
+        elif isinstance(collection2, Mapping):
+            return _best_match_collections(collection1, collection2.keys())
+    elif isinstance(collection1, Mapping):
+        if isinstance(collection2, Collection):
+            return _best_match_collections(collection1.keys(), collection2)
+        elif isinstance(collection2, Mapping):
+            return _best_match_collections(collection1.keys(), collection2.keys())
+    else:
+        raise TypeError("One or more inputs are not of the correct type. Expected str, Collection, or Mapping.")
+
+
+def _best_match_string_collection(string1: str, collection: Collection) -> BestMatch:
+    """
+    Returns the best match between a string and a collection.
+
+    Parameters
+    ----------
+    string1 : str
+        The string to compare.
+    collection : Collection
+        The collection to compare against the string.
+
+    Returns
+    -------
+    BestMatch
+        A named tuple with the best matching string from the collection and its associated score.
+    """
+    best_match = BestMatch(match="", score=0.0)
+    for item in collection:
+        score = shifted_sigmoid_similarity(string1, item)
+        if score > best_match.score:
+            best_match = BestMatch(match=item, score=score)
+    return best_match
+
+
+def _best_match_collections(collection1: Collection, collection2: Collection) -> Dict[str, BestMatch]:
+    """
+    Returns the best match(es) between two collections.
+
+    Parameters
+    ----------
+    collection1 : Collection
+        The first collection to compare.
+    collection2 : Collection
+        The second collection to compare.
+
+    Returns
+    -------
+    Dict[Any, BestMatch]
+        A dictionary where the keys are the strings from the first collection and the values
+        are the named tuples with the best string match and its associated score from the
+        second collection.
+    """
+    best_matches = {}
+    for item1 in collection1:
+        best_matches[item1] = _best_match_string_collection(item1, collection2)
+
+    return best_matches
