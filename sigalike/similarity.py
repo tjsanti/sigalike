@@ -99,6 +99,8 @@ class BestMatch(NamedTuple):
 def best_match(
     collection1: Union[Collection, Mapping, str],
     collection2: Union[Collection, Mapping],
+    shift: int = 4,
+    preprocess: bool = True,
 ) -> Union[BestMatch, Dict[str, BestMatch]]:
     """
     Returns the best match(es) between two collections or a string and a collection.
@@ -109,6 +111,10 @@ def best_match(
         The first collection to compare or a single string.
     collection2 : Collection or Mapping
         The second collection to compare.
+    shift : int, optional
+        The shift parameter for the shifted sigmoid similarity metric.
+    preprocess : bool, optional
+        Whether to preprocess the input strings.
 
     Returns
     -------
@@ -140,24 +146,24 @@ def best_match(
 
     if isinstance(collection1, str):
         if isinstance(collection2, Collection):
-            return _best_match_string_collection(collection1, collection2)
+            return _best_match_string_collection(collection1, collection2, shift, preprocess)
         elif isinstance(collection2, Mapping):
-            return _best_match_string_collection(collection1, collection2.keys())
+            return _best_match_string_collection(collection1, collection2.keys(), shift, preprocess)
     elif isinstance(collection1, Collection):
         if isinstance(collection2, Collection):
-            return _best_match_collections(collection1, collection2)
+            return _best_match_collections(collection1, collection2, shift, preprocess)
         elif isinstance(collection2, Mapping):
-            return _best_match_collections(collection1, collection2.keys())
+            return _best_match_collections(collection1, collection2.keys(), shift, preprocess)
     elif isinstance(collection1, Mapping):
         if isinstance(collection2, Collection):
-            return _best_match_collections(collection1.keys(), collection2)
+            return _best_match_collections(collection1.keys(), collection2, shift, preprocess)
         elif isinstance(collection2, Mapping):
-            return _best_match_collections(collection1.keys(), collection2.keys())
+            return _best_match_collections(collection1.keys(), collection2.keys(), shift, preprocess)
     else:
         raise TypeError("One or more inputs are not of the correct type. Expected str, Collection, or Mapping.")
 
 
-def _best_match_string_collection(string1: str, collection: Collection) -> BestMatch:
+def _best_match_string_collection(string1: str, collection: Collection, shift: int, preprocess: bool) -> BestMatch:
     """
     Returns the best match between a string and a collection.
 
@@ -167,6 +173,10 @@ def _best_match_string_collection(string1: str, collection: Collection) -> BestM
         The string to compare.
     collection : Collection
         The collection to compare against the string.
+    shift : int
+        The shift parameter for the shifted sigmoid similarity metric.
+    preprocess : bool
+        Whether to preprocess the input strings.
 
     Returns
     -------
@@ -175,13 +185,15 @@ def _best_match_string_collection(string1: str, collection: Collection) -> BestM
     """
     best_match = BestMatch(match="", score=0.0)
     for item in collection:
-        score = shifted_sigmoid_similarity(string1, item)
+        score = shifted_sigmoid_similarity(string1, item, shift, preprocess)
         if score > best_match.score:
             best_match = BestMatch(match=item, score=score)
     return best_match
 
 
-def _best_match_collections(collection1: Collection, collection2: Collection) -> Dict[str, BestMatch]:
+def _best_match_collections(
+    collection1: Collection, collection2: Collection, shift: int, preprocess: bool
+) -> Dict[str, BestMatch]:
     """
     Returns the best match(es) between two collections.
 
@@ -191,6 +203,10 @@ def _best_match_collections(collection1: Collection, collection2: Collection) ->
         The first collection to compare.
     collection2 : Collection
         The second collection to compare.
+    shift : int
+        The shift parameter for the shifted sigmoid similarity metric.
+    preprocess : bool
+        Whether to preprocess the input strings.
 
     Returns
     -------
@@ -201,6 +217,6 @@ def _best_match_collections(collection1: Collection, collection2: Collection) ->
     """
     best_matches = {}
     for item1 in collection1:
-        best_matches[item1] = _best_match_string_collection(item1, collection2)
+        best_matches[item1] = _best_match_string_collection(item1, collection2, shift, preprocess)
 
     return best_matches
