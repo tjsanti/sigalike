@@ -3,4 +3,4 @@ __version__ = "0.2.0"
 
 __all__ = []
 
-from sigalike.similarity import shifted_sigmoid_similarity
+from sigalike.similarity import best_match, shifted_sigmoid_similarity

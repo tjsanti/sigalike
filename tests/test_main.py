@@ -1,7 +1,7 @@
 import pytest
 
-from sigalike import shifted_sigmoid_similarity
-from sigalike.similarity import _preprocess
+from sigalike import best_match, shifted_sigmoid_similarity
+from sigalike.similarity import BestMatch, _preprocess
 
 
 def test_identical_strings():
@@ -52,3 +52,93 @@ def test_preprocessing():
     assert _preprocess("hello-world") == "hello world"
     assert _preprocess("HELLO") == "hello"
     assert _preprocess("HELLO!!!") == "hello"
+
+
+def test_best_match_with_lists():
+    collection1 = ["hello", "world"]
+    collection2 = ["hello", "world", "foo"]
+    expected = {
+        "hello": BestMatch(match="hello", score=1.0),
+        "world": BestMatch(match="world", score=1.0),
+    }
+    assert best_match(collection1, collection2) == expected
+
+
+def test_best_match_with_tuples():
+    collection1 = ("hello", "world")
+    collection2 = ("hello", "world", "foo")
+    expected = {
+        "hello": BestMatch(match="hello", score=1.0),
+        "world": BestMatch(match="world", score=1.0),
+    }
+    assert best_match(collection1, collection2) == expected
+
+
+def test_best_match_with_sets():
+    collection1 = {"hello", "world"}
+    collection2 = {"hello", "world", "foo"}
+    expected = {
+        "hello": BestMatch(match="hello", score=1.0),
+        "world": BestMatch(match="world", score=1.0),
+    }
+    assert best_match(collection1, collection2) == expected
+
+
+def test_best_match_with_numpy_arrays():
+    import numpy as np
+
+    collection1 = np.array(["hello", "world"])
+    collection2 = np.array(["hello", "world", "foo"])
+    expected = {
+        "hello": BestMatch(match="hello", score=1.0),
+        "world": BestMatch(match="world", score=1.0),
+    }
+    assert best_match(collection1, collection2) == expected
+
+
+def test_best_match_with_string_and_collection():
+    collection = ["hello", "world", "foo"]
+    assert best_match("hello", collection) == BestMatch(match="hello", score=1.0)
+
+
+def test_best_match_with_string_and_mapping():
+    mapping = {"hello": "world", "foo": "bar"}
+    assert best_match("hello", mapping) == BestMatch(match="hello", score=1.0)
+
+
+def test_best_match_with_mapping_and_collection():
+    mapping = {"hello": "world", "foo": "bar"}
+    collection = ["hello", "world", "foo"]
+    expected = {
+        "hello": BestMatch(match="hello", score=1.0),
+        "foo": BestMatch(match="foo", score=1.0),
+    }
+    assert best_match(mapping, collection) == expected
+
+
+def test_best_match_with_invalid_inputs():
+    with pytest.raises(TypeError):
+        best_match(2, ["hello", "world"])
+    with pytest.raises(TypeError):
+        best_match(["hello", "world"], 2)
+    with pytest.raises(TypeError):
+        best_match({"hello": "world"}, 2)
+    with pytest.raises(TypeError):
+        best_match(2, {"hello": "world"})
+
+
+def test_best_match_with_empty_collections():
+    with pytest.raises(ValueError):
+        best_match([], [])
+
+    with pytest.raises(ValueError):
+        best_match(["hello"], [])
+
+    with pytest.raises(ValueError):
+        best_match([], ["hello"])
+
+    with pytest.raises(ValueError):
+        best_match({}, ["hello"])
+
+    with pytest.raises(ValueError):
+        best_match(set(), ["hello"])

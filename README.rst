@@ -7,7 +7,13 @@
 sigalike
 ==============
 
-sigalike is a
+sigalike is a Python module that provides a simple and efficient way to calculate the shifted sigmoid similarity score between two strings. The shifted sigmoid similarity score acts as a fuzzy string matching metric, allowing for the comparison of strings with varying levels of similarity.
+
+The module provides two main functions: `shifted_sigmoid_similarity` and `best_match`. The `shifted_sigmoid_similarity` function calculates the shifted sigmoid similarity score between two input strings, while the `best_match` function returns the best match(es) between two collections or a string and a collection based on the shifted sigmoid similarity score.
+
+The module includes basic built-in preprocessing for the input strings, which removes punctuation and converts all characters to lowercase. This preprocessing step helps to improve the accuracy of the similarity score.
+
+Overall, sigalike is a lightweight and easy-to-use tool for fuzzy string matching in Python. It can be useful in various applications, such as text classification, search engines, and data cleaning.
 
 
 Features
@@ -28,8 +34,17 @@ Usage
 
 .. code-block:: python
 
-   import sigalike
+   from sigalike.similarity import shifted_sigmoid_similarity, best_match
 
+   shifted_sigmoid_similarity("hello world", "hello world")  # 1.0
+   shifted_sigmoid_similarity("hello world", "hello world", shift=4)  # 1.0
+   shifted_sigmoid_similarity("hello world", "hello world", shift=8)  # 0.9504118552868653
+
+   best_match("hello world", ["hello world", "goodbye world"])  # BestMatch(match='hello world', score=1.0)
+   best_match("hello world", ["hello world", "goodbye world"], shift=4)  # BestMatch(match='hello world', score=1.0)
+   best_match(
+       "hello world", ["hello world", "goodbye world"], shift=8
+   )  # BestMatch(match='hello world', score=0.9504118552868653)
 
 
 
