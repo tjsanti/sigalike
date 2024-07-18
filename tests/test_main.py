@@ -1,7 +1,7 @@
 import pytest
 
-from sigalike import shifted_sigmoid_similarity
-from sigalike.similarity import _preprocess
+from sigalike import best_match, shifted_sigmoid_similarity
+from sigalike.similarity import BestMatch, _preprocess
 
 
 def test_identical_strings():
@@ -52,16 +52,6 @@ def test_preprocessing():
     assert _preprocess("hello-world") == "hello world"
     assert _preprocess("HELLO") == "hello"
     assert _preprocess("HELLO!!!") == "hello"
-
-
-from typing import Any, Collection, Dict, Mapping, Union
-
-from sigalike.similarity import (
-    BestMatch,
-    _best_match_collections,
-    _best_match_string_collection,
-    best_match,
-)
 
 
 def test_best_match_with_lists():
