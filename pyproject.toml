@@ -33,7 +33,7 @@ rich = ">=10.11.0"
 numpy = "^1.26.4"
 
 [tool.poetry.group.docs.dependencies]
-sphinx = "~7.3.7"
+sphinx = "~7.4.1"
 sphinx_rtd_theme = "~2.0.0"
 gitpython = ">=3.1.31"
 sphinx-copybutton = "^0.5.2"
