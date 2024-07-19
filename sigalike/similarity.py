@@ -141,26 +141,29 @@ def best_match(
     >>> best_match(["hello", "world"], ["foo", "bar"])
     {'hello': BestMatch(match='', score=0.0), 'world': BestMatch(match='', score=0.0)}
     """
+    if not isinstance(collection1, (str, Collection, Mapping)):
+        raise TypeError("The first input is not of the correct type. Expected str, Collection, or Mapping.")
+    if not isinstance(collection2, (Collection, Mapping)):
+        raise TypeError("The second input is not of the correct type. Expected Collection or Mapping.")
+
     if len(collection1) == 0 or len(collection2) == 0:
         raise ValueError("Input collections cannot be empty")
 
     if isinstance(collection1, str):
-        if isinstance(collection2, Collection):
-            return _best_match_string_collection(collection1, collection2, shift, preprocess)
-        elif isinstance(collection2, Mapping):
+        if isinstance(collection2, Mapping):
             return _best_match_string_collection(collection1, collection2.keys(), shift, preprocess)
-    elif isinstance(collection1, Collection):
-        if isinstance(collection2, Collection):
-            return _best_match_collections(collection1, collection2, shift, preprocess)
-        elif isinstance(collection2, Mapping):
-            return _best_match_collections(collection1, collection2.keys(), shift, preprocess)
+        elif isinstance(collection2, Collection):
+            return _best_match_string_collection(collection1, collection2, shift, preprocess)
     elif isinstance(collection1, Mapping):
-        if isinstance(collection2, Collection):
-            return _best_match_collections(collection1.keys(), collection2, shift, preprocess)
-        elif isinstance(collection2, Mapping):
+        if isinstance(collection2, Mapping):
             return _best_match_collections(collection1.keys(), collection2.keys(), shift, preprocess)
-    else:
-        raise TypeError("One or more inputs are not of the correct type. Expected str, Collection, or Mapping.")
+        elif isinstance(collection2, Collection):
+            return _best_match_collections(collection1.keys(), collection2, shift, preprocess)
+    elif isinstance(collection1, Collection):
+        if isinstance(collection2, Mapping):
+            return _best_match_collections(collection1, collection2.keys(), shift, preprocess)
+        elif isinstance(collection2, Collection):
+            return _best_match_collections(collection1, collection2, shift, preprocess)
 
 
 def _best_match_string_collection(string1: str, collection: Collection, shift: int, preprocess: bool) -> BestMatch:
