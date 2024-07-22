@@ -30,7 +30,7 @@ sigalike = "sigalike.cli.main:run_app"
 python = ">=3.9"
 typing-extensions = "^4.12.2"
 rich = ">=10.11.0"
-numpy = "^1.26.4"
+numpy = "^2.0.1"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "~7.4.1"
