@@ -1,4 +1,4 @@
-.. image:: assets/logo_200w.png
+.. image:: assets/sigalike.jpeg
 
 |Python compat| |PyPi| |GHA tests| |Codecov report| |readthedocs|
 
@@ -16,9 +16,6 @@ The module includes basic built-in preprocessing for the input strings, which re
 Overall, sigalike is a lightweight and easy-to-use tool for fuzzy string matching in Python. It can be useful in various applications, such as text classification, search engines, and data cleaning.
 
 
-Features
-========
-
 Installation
 ============
 
@@ -34,17 +31,15 @@ Usage
 
 .. code-block:: python
 
-   from sigalike.similarity import shifted_sigmoid_similarity, best_match
+   from sigalike import shifted_sigmoid_similarity, best_match
 
-   shifted_sigmoid_similarity("hello world", "hello world")  # 1.0
-   shifted_sigmoid_similarity("hello world", "hello world", shift=4)  # 1.0
-   shifted_sigmoid_similarity("hello world", "hello world", shift=8)  # 0.9504118552868653
+   shifted_sigmoid_similarity("make up", "make up make up")  # 1.0
+   shifted_sigmoid_similarity("lazy dog", "the quick brown fox jumps over the lazy dog", shift=8)  # 0.8807970779778824
 
    best_match("hello world", ["hello world", "goodbye world"])  # BestMatch(match='hello world', score=1.0)
-   best_match("hello world", ["hello world", "goodbye world"], shift=4)  # BestMatch(match='hello world', score=1.0)
    best_match(
-       "hello world", ["hello world", "goodbye world"], shift=8
-   )  # BestMatch(match='hello world', score=0.9504118552868653)
+       "hello world", ["goodbye world", "hi mom", "tell the world I said hello"], shift=2
+   )  # BestMatch(match='goodbye world', score=0.2310585786300049)
 
 
 

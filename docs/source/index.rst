@@ -10,4 +10,5 @@ Welcome to sigalike's documentation!
    :caption: Contents:
 
    self
+   about
    api

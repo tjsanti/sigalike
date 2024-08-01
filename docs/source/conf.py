@@ -145,7 +145,7 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 html_title = project
-html_logo = "../../assets/logo_200w.png"
+html_logo = "../../assets/sigalike.jpeg"
 html_favicon = None
 
 html_theme_options = {
