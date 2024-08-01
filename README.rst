@@ -1,4 +1,5 @@
 .. image:: assets/sigalike.jpeg
+   :width: 40%
 
 |Python compat| |PyPi| |GHA tests| |Codecov report| |readthedocs|
 
