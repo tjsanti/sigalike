@@ -1,4 +1,4 @@
-.. image:: assets/sigalike.jpeg
+.. image:: https://github.com/tjsanti/sigalike/blob/main/assets/sigalike.jpeg?raw=true
    :width: 40%
 
 |Python compat| |PyPi| |GHA tests| |Codecov report| |readthedocs|
