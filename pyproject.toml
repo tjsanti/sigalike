@@ -9,7 +9,7 @@ style = "semver"
 
 [tool.poetry]
 name = "sigalike"
-version = "1.0.2"  # Do not change, let poetry-dynamic-versioning handle it.
+version = "1.0.3"  # Do not change, let poetry-dynamic-versioning handle it.
 homepage = "https://github.com/tjsanti/sigalike"
 repository = "https://github.com/tjsanti/sigalike"
 license = "Apache-2.0"
